@@ -4,9 +4,13 @@ namespace Tic_Tac_Toe
 {
     class Program
     {
-        private static bool startGame, firstInit, winner = true;
+        private static bool winner = true;
+        private static bool firstInit = true;
+        private static bool startGame = true;
+        private static bool setGame;
         private static byte axicX, axicY, positionX, positionY;
         private static string[,] field;
+        private static Random random = new Random();
 
         static void Main(string[] args)
         {
@@ -17,31 +21,106 @@ namespace Tic_Tac_Toe
         {
             while (startGame)
             {
-                SetAxicX();
-                SetAxicY();
-
-                field = new string[axicY, axicX];
-
-                PrintField();
-
-                while (startGame)
+                setGame = SetGame();
+                if (setGame)
                 {
-                    if (winner) {
-                        Player1();
-                        setAxic();
-                        PrintField(positionX, positionY);
-                        LogicGame();
-                    }
-                    else
-                    {
-                        Player2();
-                        setAxic();
-                        PrintField(positionX, positionY);
-                        LogicGame();
-                    }
+                    StartGameVsPlauer();
+                }
+                else
+                {
+                    StartGameVsCompucter();
                 }
 
                 RestartGame();
+            }
+        }
+
+        private static void StartGameVsPlauer()
+        {
+            SetAxicX();
+            SetAxicY();
+
+            field = new string[axicY, axicX];
+
+            PrintField();
+
+            while (startGame)
+            {
+                if (winner)
+                {
+                    Player1();
+                    setAxic();
+                    PrintField(positionX, positionY);
+                    LogicGame();
+                }
+                else
+                {
+                    Player2();
+                    setAxic();
+                    PrintField(positionX, positionY);
+                    LogicGame();
+                }
+            }
+
+            RestartGame();
+        }
+
+        private static void StartGameVsCompucter()
+        {
+            SetAxicX();
+            SetAxicY();
+
+            field = new string[axicY, axicX];
+
+            PrintField();
+
+            while (startGame)
+            {
+                if (winner)
+                {
+                    Player1();
+                    setAxic();
+                    PrintField(positionX, positionY);
+                    LogicGame();
+                }
+                else
+                {
+                    Compucter();
+                    setAxic();
+                    PrintField(positionX, positionY);
+                    LogicGame();
+                }
+            }
+        }
+
+        private static bool SetGame()
+        {
+            byte setGamneTemp = 0;
+
+            Console.WriteLine("Выберете режим игры:\n1. Игрок против Игрока.\n2. Игрок против Компьютера.");
+            
+            try
+            {
+                setGamneTemp = Convert.ToByte(Console.ReadLine());            
+            }
+            catch
+            {
+                Console.WriteLine("Введены неверные символы, повторите ввод.");
+                SetGame();
+            }
+
+            switch (setGamneTemp)
+            {
+                case 1:
+                    return true;
+
+                case 2:
+                    return false;
+
+                default:
+                    Console.WriteLine("Выбран неизвестный режим игры, попробуйте выбрать другой.");
+                    SetGame();
+                    return false;
             }
         }
 
@@ -161,11 +240,25 @@ namespace Tic_Tac_Toe
                 }
                 else
                 {
-                    Console.WriteLine("\nНельзя выбрать это поле, выберете другое.");
-                    Player2();
-                    setAxic();
+                    if (setGame)
+                    {
+                        Console.WriteLine("\nНельзя выбрать это поле, выберете другое.");
+                        Player2();
+                        setAxic();
+                    }
+                    else
+                    {
+                        Compucter();
+                        setAxic();
+                    }
                 }
             }
+        }
+
+        private static void Compucter()
+        {
+            positionX = (byte)random.Next(axicX);
+            positionY = (byte)random.Next(axicY);
         }
         private static void Player1()
         {
@@ -286,9 +379,13 @@ namespace Tic_Tac_Toe
             if (!winner)
             {
                 Console.WriteLine("Победель: Игрок 1!");
+            } 
+            else if (!winner && setGame)
+            {
+                Console.WriteLine("Победель: Игрок 2!");
             }
             else {
-                Console.WriteLine("Победель: Игрок 2!");
+                Console.WriteLine("Победель: Компуктер!");
             }
         }
 
