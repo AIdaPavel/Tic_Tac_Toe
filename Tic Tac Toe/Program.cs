@@ -4,13 +4,9 @@ namespace Tic_Tac_Toe
 {
     class Program
     {
-        private static bool startGame = true;
-        private static int axicX;
-        private static int axicY;
+        private static bool startGame, firstInit, winner = true;
+        private static byte axicX, axicY, positionX, positionY;
         private static string[,] field;
-        private static int positionX, positionY;
-        private static bool winner = true;
-        private static bool firstInit = true;
 
         static void Main(string[] args)
         {
@@ -32,12 +28,14 @@ namespace Tic_Tac_Toe
                 {
                     if (winner) {
                         Player1();
+                        setAxic();
                         PrintField(positionX, positionY);
                         LogicGame();
                     }
                     else
                     {
                         Player2();
+                        setAxic();
                         PrintField(positionX, positionY);
                         LogicGame();
                     }
@@ -52,7 +50,8 @@ namespace Tic_Tac_Toe
             Console.Write("Выберите размер полеля по оси \"X\" от 3 до 9: ");
             try
             {
-                axicX = Convert.ToInt32(Console.ReadLine()) + 1;
+                axicX = Convert.ToByte(Console.ReadLine());
+                axicX++;
 
                 if (axicX <= 10 && axicX >= 4)
                 { }
@@ -74,7 +73,8 @@ namespace Tic_Tac_Toe
             Console.Write("Выберите размер полеля по оси \"Y\" от 3 до 9: ");
             try
             {
-                axicY = Convert.ToInt32(Console.ReadLine()) + 1;
+                axicY = Convert.ToByte(Console.ReadLine());
+                axicY++;
 
                 if (axicY <= 10 && axicY >= 4)
                 { }
@@ -134,12 +134,45 @@ namespace Tic_Tac_Toe
             Console.WriteLine();
         }
 
+
+        private static void setAxic() {
+            if (winner)
+            {
+                if (field[positionY, positionX] == null)
+                {
+                    field[positionY, positionX] = "X ";
+
+                    winner = !winner;
+                }
+                else
+                {
+                    Console.WriteLine("\nНельзя выбрать это поле, выберете другое.");
+                    Player1();
+                    setAxic();
+                }
+            }
+            else
+            {
+                if (field[positionY, positionX] == null)
+                {
+                    field[positionY, positionX] = "O ";
+
+                    winner = !winner;
+                }
+                else
+                {
+                    Console.WriteLine("\nНельзя выбрать это поле, выберете другое.");
+                    Player2();
+                    setAxic();
+                }
+            }
+        }
         private static void Player1()
         {
             Console.Write("Игрок 1:\nВыберете координаты по оси \"X\": ");
             try
             {
-                positionX = Convert.ToInt32(Console.ReadLine());
+                positionX = Convert.ToByte(Console.ReadLine());
 
             }
             catch
@@ -151,26 +184,13 @@ namespace Tic_Tac_Toe
             Console.Write("Выберете координаты по оси \"Y\": ");
             try
             {
-                positionY = Convert.ToInt32(Console.ReadLine());
-
+                positionY = Convert.ToByte(Console.ReadLine());
             }
             catch
             {
                 Console.WriteLine("Введены неверные символы, повторите ввод.");
                 Player1();
             }
-
-            if (field[positionY, positionX] == null)
-            {
-                field[positionY, positionX] = "X ";
-            }
-            else
-            {
-                Console.WriteLine("\nНельзя выбрать это поле, выберете другое.");
-                Player1();
-            }
-
-            winner = false;
         }
 
         private static void Player2()
@@ -178,7 +198,7 @@ namespace Tic_Tac_Toe
             Console.Write("Игрок 2:\nВыберете координаты по оси \"X\": ");
             try
             {
-                positionX = Convert.ToInt32(Console.ReadLine());
+                positionX = Convert.ToByte(Console.ReadLine());
 
             }
             catch
@@ -190,31 +210,21 @@ namespace Tic_Tac_Toe
             Console.Write("Выберете координаты по оси \"Y\": ");
             try
             {
-                positionY = Convert.ToInt32(Console.ReadLine());
-
+                positionY = Convert.ToByte(Console.ReadLine());                               
             }
             catch
             {
                 Console.WriteLine("Введены неверные символы, повторите ввод.");
                 Player2();
             }
-
-            if (field[positionY, positionX] == null)
-            {
-                field[positionY, positionX] = "O ";
-            }
-            else
-            {
-                Console.WriteLine("\nНельзя выбрать это поле, выберете другое.");
-                Player2();
-            }
-
-            winner = true;
         }
 
         private static void LogicGame()
         {
-            for (int y = 0; y < axicY - 2; y++)
+            byte count = 0;
+
+            // Проверка по вертикали
+            for (int y = 0; y < axicY; y++)
             {
                 for (int x = 0; x < axicX - 2; x++)
                 { 
@@ -223,12 +233,15 @@ namespace Tic_Tac_Toe
                         startGame = false;
                         PrintWinner();
                     }
-                    else if (field[y, x] != null && field[y, x].Equals(field[y + 1, x]) && field[y, x].Equals(field[y + 2, x]))
-                    {
-                        startGame = false;
-                        PrintWinner();
-                    }
-                    else if (field[y, x] != null && field[y, x].Equals(field[y + 1, x + 1]) && field[y, x].Equals(field[y + 2, x + 2]))
+                }
+            }
+
+            // Проверка по горизонтали
+            for (int y = 0; y < axicY - 2; y++)
+            {
+                for (int x = 0; x < axicX; x++)
+                {
+                    if (field[y, x] != null && field[y, x].Equals(field[y + 1, x]) && field[y, x].Equals(field[y + 2, x]))
                     {
                         startGame = false;
                         PrintWinner();
@@ -236,27 +249,32 @@ namespace Tic_Tac_Toe
                 }
             }
 
-            for (int y = axicY - 1; y > 1; y--)
+            // Проверка по диагоналям
+            for (int y = 1; y < axicY - 1; y++)
             {
-                for (int x = axicX - 1; x > 1; x--)
+                for (int x = 1; x < axicX - 1; x++)
                 {
-                    if (field[y, x] != null && field[y, x].Equals(field[y, x - 1]) && field[y, x].Equals(field[y, x - 2]))
+                    if ((field[y, x] != null && field[y, x].Equals(field[y + 1, x + 1]) && field[y, x].Equals(field[y - 1, x - 1])) ||
+                        (field[y, x] != null && field[y, x].Equals(field[y - 1, x + 1]) && field[y, x].Equals(field[y + 1, x - 1])))
                     {
                         startGame = false;
                         PrintWinner();
                     }
-                    else if (field[y, x] != null && field[y, x].Equals(field[y - 1, x]) && field[y, x].Equals(field[y - 2, x]))
-                    {
-                        startGame = false;
-                        PrintWinner();
-                    }
+                }
+            }
 
-                    if (x < axicX - 1)
+            // Проверка на нечью
+            for (int y = 0; y < axicY; y++)
+            {                
+                for (int x = 0; x < axicX; x++)
+                {
+                    if (field[y, x] != null)
                     {
-                        if (field[y, x - 1] != null && field[y, x - 1].Equals(field[y - 1, x]) && field[y, x - 1].Equals(field[y - 2, x + 1]))
+                        count++;
+                        if (count == axicX * axicY)
                         {
+                            Console.WriteLine("Ничья!");
                             startGame = false;
-                            PrintWinner();
                         }
                     }
                 }
