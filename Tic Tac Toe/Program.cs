@@ -8,7 +8,7 @@ namespace Tic_Tac_Toe
         private static bool firstInit = true;
         private static bool startGame = true;
         private static bool setGame;
-        private static byte axicX, axicY, positionX, positionY;
+        private static byte axicX, axicY, positionX, positionY, gameLevel;
         private static string[,] field;
         private static Random random = new Random();
 
@@ -40,6 +40,8 @@ namespace Tic_Tac_Toe
             SetAxicX();
             SetAxicY();
 
+            setGameLevel();
+
             field = new string[axicY, axicX];
 
             PrintField();
@@ -51,14 +53,36 @@ namespace Tic_Tac_Toe
                     ChoosingCoordinates(winner);
                     setAxic();
                     PrintField(positionX, positionY);
-                    LogicGame();
+                    switch (gameLevel)
+                    {
+                        case 1:
+                            LogicGameForLvl1();
+                            break;
+                        case 2:
+                            LogicGameForLvl2();
+                            break;
+                        default:
+                            LogicGameForLvl3();
+                            break;
+                    }
                 }
                 else
                 {
                     ChoosingCoordinates(winner);
                     setAxic();
                     PrintField(positionX, positionY);
-                    LogicGame();
+                    switch (gameLevel)
+                    {
+                        case 1:
+                            LogicGameForLvl1();
+                            break;
+                        case 2:
+                            LogicGameForLvl2();
+                            break;
+                        default:
+                            LogicGameForLvl3();
+                            break;
+                    }
                 }
             }
         }
@@ -68,6 +92,8 @@ namespace Tic_Tac_Toe
             SetAxicX();
             SetAxicY();
 
+            setGameLevel();
+
             field = new string[axicY, axicX];
 
             PrintField();
@@ -79,14 +105,36 @@ namespace Tic_Tac_Toe
                     ChoosingCoordinates(winner);
                     setAxic();
                     PrintField(positionX, positionY);
-                    LogicGame();
+                    switch (gameLevel)
+                    {
+                        case 1:
+                            LogicGameForLvl1();
+                            break;
+                        case 2:
+                            LogicGameForLvl2();
+                            break;
+                        default:
+                            LogicGameForLvl3();
+                            break;
+                    }
                 }
                 else
                 {
                     Compucter();
                     setAxic();
                     PrintField(positionX, positionY);
-                    LogicGame();
+                    switch (gameLevel)
+                    {
+                        case 1:
+                            LogicGameForLvl1();
+                            break;
+                        case 2:
+                            LogicGameForLvl2();
+                            break;
+                        default:
+                            LogicGameForLvl3();
+                            break;
+                    }
                 }
             }
         }
@@ -179,6 +227,22 @@ namespace Tic_Tac_Toe
                 {
                     Console.WriteLine("Введены неверные символы, повторите ввод.");
                 }
+            }
+        }
+
+        private static void setGameLevel()
+        {
+            if (axicX < 6 || axicY < 6)
+            {
+                gameLevel = 1;
+            }
+            else if (axicX < 8 && axicY < 8)
+            {
+                gameLevel = 2;
+            }
+            else
+            {
+                gameLevel = 3;
             }
         }
 
@@ -330,7 +394,7 @@ namespace Tic_Tac_Toe
             positionY = (byte)random.Next(axicY);
         }
         
-        private static void LogicGame()
+        private static void LogicGameForLvl1()
         {
             byte count = 0;
             bool success = false;
@@ -400,6 +464,178 @@ namespace Tic_Tac_Toe
                     }
                 }
                 success = true;
+            }
+        }
+
+        private static void LogicGameForLvl2()
+        {
+            byte count = 0;
+
+            while (true)
+            {
+                // Проверка по вертикали
+                for (int y = 0; y < axicY; y++)
+                {
+                    for (int x = 0; x < axicX - 3; x++)
+                    {
+                        if (field[y, x] != null && 
+                            field[y, x].Equals(field[y, x + 1]) && 
+                            field[y, x].Equals(field[y, x + 2]) &&
+                            field[y, x].Equals(field[y, x + 3]))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка по горизонтали
+                for (int y = 0; y < axicY - 3; y++)
+                {
+                    for (int x = 0; x < axicX; x++)
+                    {
+                        if (field[y, x] != null && 
+                            field[y, x].Equals(field[y + 1, x]) && 
+                            field[y, x].Equals(field[y + 2, x]) &&
+                            field[y, x].Equals(field[y + 3, x]))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка по диагонали слева направо
+                for (int y = 1; y < axicY - 1; y++)
+                {
+                    for (int x = 1; x < axicX - 1; x++)
+                    {
+                        if ((field[y, x] != null && field[y, x].Equals(field[y + 1, x + 1]) && 
+                            field[y, x].Equals(field[y - 1, x - 1]) && field[y, x].Equals(field[y + 2, x + 2])))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка по диагонали справа налево
+                for (int y = axicY - 3; y > 0; y--)
+                {
+                    for (int x = 2; x < axicX - 1; x++)
+                    {
+                        if (field[y, x] != null && field[y, x].Equals(field[y - 1, x + 1]) &&
+                            field[y, x].Equals(field[y + 1, x - 1]) && field[y, x].Equals(field[y + 2, x - 2]))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка на нечью
+                for (int y = 0; y < axicY; y++)
+                {
+                    for (int x = 0; x < axicX; x++)
+                    {
+                        if (field[y, x] != null)
+                        {
+                            count++;
+                            if (count == axicX * axicY)
+                            {
+                                Console.WriteLine("Ничья!");
+                                startGame = false;
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+        }
+
+        private static void LogicGameForLvl3()
+        {
+            byte count = 0;
+
+            while (true)
+            {
+                // Проверка по вертикали
+                for (int y = 0; y < axicY; y++)
+                {
+                    for (int x = 0; x < axicX - 4; x++)
+                    {
+                        if (field[y, x] != null &&
+                            field[y, x].Equals(field[y, x + 1]) &&
+                            field[y, x].Equals(field[y, x + 2]) &&
+                            field[y, x].Equals(field[y, x + 3]) &&
+                            field[y, x].Equals(field[y, x + 4]))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка по горизонтали
+                for (int y = 0; y < axicY - 4; y++)
+                {
+                    for (int x = 0; x < axicX; x++)
+                    {
+                        if (field[y, x] != null &&
+                            field[y, x].Equals(field[y + 1, x]) &&
+                            field[y, x].Equals(field[y + 2, x]) &&
+                            field[y, x].Equals(field[y + 3, x]) &&
+                            field[y, x].Equals(field[y + 4, x]))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка по диагоналям
+                for (int y = 2; y < axicY - 2; y++)
+                {
+                    for (int x = 2; x < axicX - 2; x++)
+                    {
+                        if ((field[y, x] != null && 
+                            field[y, x].Equals(field[y + 1, x + 1]) && field[y, x].Equals(field[y - 1, x - 1]) &&
+                            field[y, x].Equals(field[y + 2, x + 2]) && field[y, x].Equals(field[y - 2, x - 2])) 
+                            ||
+                            (field[y, x] != null && 
+                            field[y, x].Equals(field[y - 1, x + 1]) && field[y, x].Equals(field[y + 1, x - 1]) &&
+                            field[y, x].Equals(field[y - 2, x + 2]) && field[y, x].Equals(field[y + 2, x - 2])))
+                        {
+                            startGame = false;
+                            PrintWinner();
+                            return;
+                        }
+                    }
+                }
+
+                // Проверка на нечью
+                for (int y = 0; y < axicY; y++)
+                {
+                    for (int x = 0; x < axicX; x++)
+                    {
+                        if (field[y, x] != null)
+                        {
+                            count++;
+                            if (count == axicX * axicY)
+                            {
+                                Console.WriteLine("Ничья!");
+                                startGame = false;
+                            }
+                        }
+                    }
+                }
+                return;
             }
         }
 
